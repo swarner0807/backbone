@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lan="en">
+<meta charset="UTF-8">
+
+<head>
+  <meta charset="utf-8">
+  <title></title>
+  <meta name="description" content="">
+</head>
+<body>
+  <div id="todo">
+  </div>
+  <script type="text/template" id="item-template">
+    <div>
+      <input id="todo_complete" type="checkbox" <%= completed ? 'checked="checked"' : '' %>>
+      <%= title %>
+    </div>
+  </script>
+ 
+</body>
+</html>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+<script src="http://documentcloud.github.com/underscore/underscore-min.js"></script>
+<script src="http://documentcloud.github.com/backbone/backbone-min.js"></script>
+<script>
+var Todo = Backbone.Model.extend({
+  // Default todo attribute values
+  defaults: {
+    title: '',
+    completed: false
+  },
+  initialize: function(){
+    console.log('This model has been initialized.');
+   this.on('change:completed', function(){
+        console.log('- completed has changed.');
+    })
+    this.on('change:title', function(){
+    	console.log('- title has changed.');
+    })
+  }
+});
+
+// Setting the value of attributes via instantiation
+var myTodo = new Todo({
+  title: "Set through instantiation."
+});
+console.log('Todo title: ' + myTodo.get('title')); // Todo title: Set through instantiation.
+console.log('Completed: ' + myTodo.get('completed')); // Completed: false
+
+// Set single attribute value at a time through Model.set():
+myTodo.set("title", "Title attribute set through Model.set().");
+console.log('Todo title: ' + myTodo.get('title')); // Todo title: Title attribute set through Model.set().
+console.log('Completed: ' + myTodo.get('completed')); // Completed: false
+
+// Set map of attributes through Model.set():
+myTodo.set({
+  title: "Both attributes set through Model.set().",
+  completed: true
+});
+console.log('Todo title: ' + myTodo.get('title')); // Todo title: Both attributes set through Model.set().
+console.log('Completed: ' + myTodo.get('completed')); // Completed: true
+myTodo.set({
+	title: "I do what I want mmkay?",
+	completed: false
+});
+console.log(myTodo.toJSON());
+console.log(JSON.stringify(myTodo));
+console.log(myTodo.get('title') + " " + (myTodo.get('completed')))
+
+var todo1 = new Todo({
+	title: 'this is a title'
+});
+console.log(todo1.get('title'));
+console.log(todo1.hasChanged(null));
+todo1.set('title', 'new title here');
+console.log(todo1.hasChanged(null));
+
+var TodoView = Backbone.View.extend({
+
+  tagName:  'li',
+
+  // Cache the template function for a single item.
+  todoTpl: _.template( "An example template" ),
+
+  events: {
+    'dblclick label': 'edit',
+    'keypress .edit': 'updateOnEnter',
+    'blur .edit':   'close'
+  },
+
+  initialize: function (options) {
+    // In Backbone 1.1.0, if you want to access passed options in
+    // your view, you will need to save them as follows:
+    this.options = options || {};
+  },
+
+  // Re-render the title of the todo item.
+  render: function() {
+    this.$el.html( this.todoTpl( this.model.attributes ) );
+    this.input = this.$('.edit');
+    return this;
+  },
+
+  edit: function() {
+    // executed when todo label is double clicked
+  },
+
+  close: function() {
+    // executed when todo loses focus
+  },
+
+  updateOnEnter: function( e ) {
+    // executed on each keypress when in todo edit mode,
+    // but we'll wait for enter to get in action
+  }
+});
+
+var todoView = new TodoView();
+
+// log reference to a DOM element that corresponds to the view instance
+console.log(todoView.el); // logs <li></li>
+
+var TodosView = Backbone.View.extend({
+  tagName: 'ul', // required, but defaults to 'div' if not set
+  className: 'container', // optional, you can assign multiple classes to 
+                          // this property like so: 'container homepage'
+  id: 'todos' // optional
+});
+
+var todosView = new TodosView();
+console.log(todosView.el); // logs <ul id="todos" class="container"></ul>
+
+
+// We create two DOM elements representing buttons
+// which could easily be containers or something else
+var button1 = $('<button></button>');
+var button2 = $('<button></button>');
+
+// Define a new view
+var View = Backbone.View.extend({
+      events: {
+        click: function(e) {
+          console.log(view.el === e.target);
+        }
+      }
+    });
+
+// Create a new instance of the view, applying it
+// to button1
+var view = new View({el: button1});
+
+// Apply the view to button2 using setElement
+view.setElement(button2);
+
+button1.trigger('click'); 
+button2.trigger('click'); // returns true
+// We can also provide raw markup to setElement
+// as follows (just to demonstrate it can be done):
+var view = new Backbone.View;
+view.setElement('<p><a><b>test</b></a></p>');
+console.log(view.$('a b').html()); // outputs "test"
+</script>
+
+</body>
+</html> 
