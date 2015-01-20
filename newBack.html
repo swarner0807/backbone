@@ -9,6 +9,10 @@
   <!--    CSS    -->
   <!-- ========= -->
   <style type="text/css">
+    #ruler { 
+      visibility: hidden; 
+      white-space: nowrap; 
+    }
  	  #todo-list input.edit {
       display: none; /* Hides input box*/
     }
@@ -54,6 +58,7 @@
   <!-- ========= -->
   <!-- Your HTML -->
   <!-- ========= -->
+  <span id="ruler"></span>
 	<section id="todoapp">
     <header id="header">
       <h1>Todos</h1>
@@ -99,7 +104,39 @@
 
  	var app = {}; // create namespace for our app
 
-	//--------------
+    //----------------
+    // Length Checker
+    //----------------
+    String.prototype.visualLength = function()
+    {
+      var ruler = getId("ruler");
+      ruler.innerHTML = this;
+      return ruler.offsetWidth;
+    }
+
+    function getId(id)
+    {
+        return document.getElementById(id);
+    }
+
+    String.prototype.trimToPx = function(length)
+    {
+        var tmp = this;
+        var trimmed = this;
+        if (tmp.visualLength() > length)
+        {
+            trimmed += "...";
+            while (trimmed.visualLength() > length)
+            {
+                tmp = tmp.substring(0, tmp.length-1);
+                trimmed = tmp + "...";
+            }
+        }
+    
+    return trimmed;
+    }
+
+	  //--------------
     // Models
     //--------------
     app.Todo = Backbone.Model.extend({
@@ -169,7 +206,7 @@
         if(value) {
           this.model.save({
             title: value,
-            titleShort: value.substring(0, 15),
+            titleShort: value.trimToPx(170),
           });
         }
         this.$el.removeClass('editing');
@@ -194,6 +231,7 @@
        }
 
     });
+
 
 	// renders the full list of todo items calling TodoView for each one.
     app.AppView = Backbone.View.extend({
@@ -239,7 +277,7 @@
         return {
           //var inputString = this.input.val().trim();
           title: this.input.val().trim(),
-          titleShort: (this.input.val().trim().substring(0, 15)),
+          titleShort: (this.input.val().trim().trimToPx(170)),
           completed: false
         }
       }
