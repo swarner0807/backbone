@@ -8,6 +8,7 @@
   <!-- ========= -->
   <!--    CSS    -->
   <!-- ========= -->
+  <link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
   <style type="text/css">
     #ruler { 
       visibility: hidden; 
@@ -32,11 +33,16 @@
       display: inline; /* Shows done button when .editing*/
     }
     #todoapp {
-    	border-style: solid;
-    	width: 350px;
+    	border-radius: 10px;
+      background-color: #F3F3F4;
+    	width: 500px;
+      padding-bottom: 10px;
+      padding-top: 1px;
+      margin-left: 20px;
+      margin-top: 20px;
+
     }
     #header {
-    	border-bottom: solid;
     	text-align: center;
     }
     #main p {
@@ -51,7 +57,24 @@
     .view {
      clear: both;
     }
+    
+    hr {
+      border-width: 2px 0;
+      border-color: #DBDBDC;
+      width: 90%;
+    }
 
+    .form-control-inline {
+      max-width: 200px;
+      display: inline;
+    }
+    .form-control-inline-edit {
+      max-width: 280px;
+      display: inline;
+    }
+    .editButton, .done {
+      width: 58px;
+    }
   </style>
 </head>
 <body>
@@ -62,7 +85,7 @@
 	<section id="todoapp">
     <header id="header">
       <h1>Todos</h1>
-      <input id="new-todo" placeholder="What needs to be done?">
+      <input type="text" id="new-todo" class="form-control form-control-inline" placeholder="What needs to be done?">
       <div>
         <a href="#/">show all</a> |
     	<a href="#/pending">show pending</a> |
@@ -70,6 +93,7 @@
       </div>
     </header>
     <section id="main">
+      <hr />
       <p>(double click a todo to see full text)</p>
       <ul id="todo-list"></ul>
     </section>
@@ -80,11 +104,11 @@
     <div class="view">
       <input class="toggle" type="checkbox" <%= completed ? 'checked' : '' %>>
       <label><%- titleShort %></label>
-      <input class="edit" value="<%- title %>" size="15">
+      <input class="edit form-control form-control-inline-edit" type="text" value="<%- title %>">
       <div class="wrapper">
-      <button class="editButton">edit</button>
-      <button class="done">done</button>
-      <button class="destroy">remove</button>
+      <button class="editButton btn btn-default">edit</button>
+      <button class="done btn btn-default">done</button>
+      <button class="destroy btn btn-default">remove</button>
       </div>
     </div>
   </script>  
@@ -186,7 +210,7 @@
         this.model.on('destroy', this.remove, this); // remove: Convenience Backbone
       },
        events: {
-        'dblclick label' : 'edit',
+        'dblclick label' : 'fullText',
         'click .editButton' : 'editButton',
         'click .done' : 'doneButton',
         'keypress .edit' : 'updateOnEnter',
@@ -194,19 +218,16 @@
         'click .toggle': 'toggleCompleted',
         'click .destroy': 'destroy'
       },
-      edit: function(){
-       // var value = this.input.val().trim();
+      fullText: function(){
         var value = this.model.get("title");
         alert(value);
-        //this.$el.addClass('editing');
-       // this.input.focus();
       },
       close: function(){
         var value = this.input.val().trim();
         if(value) {
           this.model.save({
             title: value,
-            titleShort: value.trimToPx(170),
+            titleShort: value.trimToPx(270),
           });
         }
         this.$el.removeClass('editing');
@@ -277,13 +298,13 @@
         return {
           //var inputString = this.input.val().trim();
           title: this.input.val().trim(),
-          titleShort: (this.input.val().trim().trimToPx(170)),
+          titleShort: (this.input.val().trim().trimToPx(270)),
           completed: false
         }
       }
     });
 
-	//--------------
+	  //--------------
     // Routers
     //--------------
     
